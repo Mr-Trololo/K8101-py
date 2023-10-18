@@ -80,14 +80,37 @@ def send(cmd): # to do: Make this not suck ass :)
 
 
 # here's some miscelanious code we'll need later ;)
-# bmp code
+
+def convertBMP(image):
+    if image.mode != 'L': # Convert the image to grayscale if it's not already
+        image = image.convert('L')
+    pixel_data = list(image.getdata()) # Get the image data as a list of pixel values (0-255)
+    binary_data = [1 if pixel < 128 else 0 for pixel in pixel_data] # Convert pixel values to 1s (black) and 0s (white)
+    width, height = image.size # Determine the width and height of the image
+    pixel_array = [binary_data[i:i+width] for i in range(0, len(binary_data), width)] # Reshape the 1D list into a 2D array
+    # Now, pixel_array contains the binary data for each pixel in the image
+    # 1 represents black, and 0 represents white
+
+    # this headache shuffles the 1s and 0s to the stupid layout the hellish LCD wants, then converts it to decimals 0-255 and a lot more shit...
+    allbands = []
+    for start_row in range(0, 64, 8): # repeat from row 0 to 64 in 8 px increments
+        for band in range(128): #repeat 128 times, one for each pixel (horizontally) on the screen 
+            column = []
+            for row in range(7, -1, -1): 
+                column.append(str(pixel_array[start_row + row][band]))
+            binary_string = ''.join(column) # Convert the binary array to a binary string
+            decimal_value = int(binary_string, 2) # Convert the binary string to an integer
+            decimal_value = min(max(decimal_value, 0), 255) # Make sure the decimal value is within the range of 0 to 255
+            allbands.append(decimal_value)
+    return bytearray(allbands)
 
 # here goes all user instructions/commands
 
 def drawBitmap(bmp):
-    params = [bmp]
+    params = convertBMP(bmp)
     cmd = makeCommand(Command.bitmap, params)
     send(cmd)
+
 
 def clearAll():
     params = [] 

@@ -1,6 +1,6 @@
 import random
 import time
-import k8101
+import K8101
 
 # Display dimensions
 WIDTH = 128
@@ -14,12 +14,12 @@ box_speed_x = 2
 box_speed_y = 2
 
 while True:
-    k8101.clearAll()
-    k8101.backlight(10)
+    K8101.clearAll()
+    K8101.backlight(10)
     # Draw the box
     for y in range(max(0, box_y - box_size), min(HEIGHT, box_y + box_size)):
         for x in range(max(0, box_x - box_size), min(WIDTH, box_x + box_size)):
-            k8101.drawPixel(x, y)
+            K8101.drawPixel(x, y)
 
     # Update the box's position
     box_x += box_speed_x
