@@ -1,4 +1,3 @@
-import random
 import time
 import K8101
 
@@ -7,19 +6,20 @@ WIDTH = 128
 HEIGHT = 64
 
 # Box properties
-box_size = 2
-box_x = random.randint(box_size, WIDTH - box_size)
-box_y = random.randint(box_size, HEIGHT - box_size)
+box_size = 8
+box_x = 64
+box_y = 32
 box_speed_x = 2
 box_speed_y = 2
 
+K8101.connect()
+K8101.backlight(255)
+
 while True:
     K8101.clearAll()
-    K8101.backlight(10)
+    
     # Draw the box
-    for y in range(max(0, box_y - box_size), min(HEIGHT, box_y + box_size)):
-        for x in range(max(0, box_x - box_size), min(WIDTH, box_x + box_size)):
-            K8101.drawPixel(x, y)
+    K8101.drawFilledRectangle(box_x, box_y, box_size, box_size)
 
     # Update the box's position
     box_x += box_speed_x
@@ -28,8 +28,9 @@ while True:
     # Bounce the box off the walls
     if box_x - box_size < 0 or box_x + box_size >= WIDTH:
         box_speed_x = -box_speed_x
-    if box_y - box_size < 0 or box_y + box_size >= HEIGHT:
+    if box_y - box_size < 0 or box_y + box_size >= HEIGHT: 
         box_speed_y = -box_speed_y
 
     # Delay for a while to control the animation speed
-    time.sleep(1)
+    time.sleep(.1)
+

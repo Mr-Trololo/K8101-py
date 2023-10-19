@@ -1,7 +1,13 @@
 import K8101
+from PIL import Image
+
+# Connect to display first
+K8101.connect()
 
 # standard commands
 K8101.clearAll()
+image = Image.open('image.bmp')
+K8101.drawBitmap(image)
 K8101.clearForeground()
 K8101.drawText("hewwo",1,1,10,6)
 K8101.beep(1)
@@ -20,4 +26,4 @@ K8101.setInverted(False)
 
 # custom commands
 K8101.waitForKey() # returns press or hold depending on action
-K8101.drawCircle(107,21,20,0.5)
+K8101.drawHollowCircle(107,21,20,0.5)

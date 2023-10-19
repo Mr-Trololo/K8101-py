@@ -2,7 +2,7 @@ import K8101
 
 
 
-
+K8101.connect()
 
 
 K8101.clearAll()
