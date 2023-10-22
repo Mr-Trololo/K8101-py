@@ -7,8 +7,8 @@ import serial.tools.list_ports
 VID = 0x10cf
 PID = 0x8101
 
-
-class Command(Enum): # define command IDs
+# define command IDs
+class Command(Enum):
     bitmap = 1
     clearall = 2
     clearfg = 3
@@ -25,6 +25,7 @@ class Command(Enum): # define command IDs
     eraseline = 19
     invert = 21
     
+# define text sizes
 class TextSize(Enum):
     small = 4
     big = 6
@@ -70,25 +71,23 @@ def makeCommand(cmd, params):
     return payload
 
 def connect():
-    # Function to find the serial port based on VID and PID
-    def find_serial_port(vid, pid):
-        ports = serial.tools.list_ports.comports()
-        for port in ports:
-            if port.vid == vid and port.pid == pid:
-                return port.device
-        return None
+    # find the serial port based on VID and PID
+    
+    serial_port = None
+    ports = serial.tools.list_ports.comports()
+    for port in ports:
+        if port.vid == VID and port.pid == PID:
+            serial_port = port.device
 
-    # Find the serial port for display
-    serial_port = find_serial_port(VID, PID)
-
-    if serial_port is not None: # Connect to display on the found serial port
+    # connect to display on the found serial port
+    if serial_port is not None: 
         global ser
         ser = serial.Serial(serial_port, baudrate=19200) 
         print(f"Connected to {serial_port}")
     else:
-        print("Device not found on any available serial port.")
+        raise Exception("Device not found, is it plugged in? :3")
 
-def send(cmd):
+def send(cmd): # add error correction
     ser.write(cmd)
 
 
@@ -223,12 +222,20 @@ def setInverted(inv):
 # custom commands :)
 
 def waitForKey():
-    data = ser.read(size=5) # waits for serial data and saves result in variable
+    data = ser.read(size=5,) # waits for serial data and saves result in variable
 
     if data == bytes.fromhex('ff05ff0400'):
         return("short")
     else:
         return("long")
+    
+def isKeyPressed():
+    if ser.in_waiting > 0:
+        data = ser.read(ser.in_waiting)
+        if data == bytes.fromhex('ff05ff0400'):
+            return("short")
+        else:
+            return("long")
 
 def drawHollowCircle(x,y,rad,thick):
     # Define the center and radius of the "O"
